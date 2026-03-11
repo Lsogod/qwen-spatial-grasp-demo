@@ -268,6 +268,23 @@
       </article>
 
       <article class="panel span-12">
+        <h2>项目介绍</h2>
+        <p>
+          这个仓库是从原始论文发布仓库中拆出来的一个展示版。目标不是继续堆数据、实验表格和论文结果，
+          而是专门面向“智能抓取 demo”做整理，让别人一眼能看明白这个项目在做什么。
+        </p>
+        <div class="tag-row">
+          <span class="tag">Natural Language Instruction</span>
+          <span class="tag">Visual Grounding</span>
+          <span class="tag">Action Planning</span>
+          <span class="tag">Grasp Execution</span>
+        </div>
+        <pre>一句话说明：
+用户输入自然语言指令，系统自动理解任务、定位目标部件、
+生成动作序列，并驱动机械臂完成抓取与移动。</pre>
+      </article>
+
+      <article class="panel span-12">
         <h2>典型流程</h2>
         <p>
           `Qwen` 模式下，模型负责动作规划和目标部件定位；`main_vlm.py` 负责把像素目标交给抓取候选生成、
@@ -275,6 +292,46 @@
         </p>
         <pre>Instruction -> Qwen Planner -> Part Grounding -> Pixel Target ->
 Grasp Candidate Filtering -> UR5e Execution</pre>
+      </article>
+
+      <article class="panel span-12">
+        <h2>为什么保留两条方案</h2>
+        <div class="compare">
+          <div class="card">
+            <strong>Qwen 方案</strong>
+            <p>
+              负责主展示。优势是自然语言交互更直接，适合做“用户说一句话，系统就能完成抓取任务”的演示。
+            </p>
+          </div>
+          <div class="card">
+            <strong>你的 SVP 方案</strong>
+            <p>
+              负责方法介绍。优势是结构更清楚、约束更强，适合用来说明你自己在视觉提示与执行约束上的设计。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel span-12">
+        <h2>模块分工</h2>
+        <div class="compare">
+          <div class="card">
+            <strong>`vision_agent.py`</strong>
+            <p>Qwen 主线，负责动作规划和目标部件定位。</p>
+          </div>
+          <div class="card">
+            <strong>`vision_agent_v2.py`</strong>
+            <p>你的增强方法，负责结构化视觉提示链路。</p>
+          </div>
+          <div class="card">
+            <strong>`grasp_process.py`</strong>
+            <p>生成抓取候选并结合约束做筛选。</p>
+          </div>
+          <div class="card">
+            <strong>`manipulator_grasp/`</strong>
+            <p>MuJoCo 机械臂环境与抓取执行。</p>
+          </div>
+        </div>
       </article>
 
       <article class="panel span-12">
