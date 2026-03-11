@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Qwen Spatial Grasp Demo</title>
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --paper: #fffaf3;
+      --ink: #1f1b16;
+      --muted: #6b6256;
+      --line: #d8ccbd;
+      --sand: #dcc3a5;
+      --clay: #ad6c3f;
+      --teal: #1d6b68;
+      --gold: #c58a2c;
+      --shadow: 0 18px 40px rgba(31, 27, 22, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(197, 138, 44, 0.14), transparent 28%),
+        radial-gradient(circle at right 20%, rgba(29, 107, 104, 0.16), transparent 24%),
+        linear-gradient(180deg, #f9f4ed 0%, var(--bg) 100%);
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(29, 107, 104, 0.96), rgba(173, 108, 63, 0.94));
+      color: #fff;
+      border-radius: 28px;
+      padding: 36px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -70px -90px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 56px);
+      line-height: 1.02;
+      max-width: 760px;
+    }
+
+    .hero p {
+      max-width: 760px;
+      font-size: 17px;
+      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 16px 0 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .actions a {
+      text-decoration: none;
+      color: inherit;
+      padding: 11px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      font-weight: 600;
+    }
+
+    .actions a.primary {
+      background: #fff4df;
+      color: var(--ink);
+      border-color: transparent;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+    }
+
+    .panel p, .panel li {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-12 { grid-column: span 12; }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      font-size: 13px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: #f5eadc;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .compare .card {
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .shot {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .shot img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1.15 / 1;
+      object-fit: cover;
+    }
+
+    .shot div {
+      padding: 14px 16px 16px;
+    }
+
+    code, pre {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    pre {
+      margin: 16px 0 0;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #201b16;
+      color: #f5eadc;
+      padding: 16px;
+      overflow: auto;
+      line-height: 1.7;
+    }
+
+    a { color: var(--teal); }
+
+    @media (max-width: 900px) {
+      .span-7, .span-5, .span-12 { grid-column: span 12; }
+      .shot-grid, .compare { grid-template-columns: 1fr; }
+      .hero { padding: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <span class="eyebrow">Qwen First</span>
+      <h1>Qwen + 自定义抓取策略的智能抓取展示仓库</h1>
+      <p>
+        这个版本不再面向论文复现实验，而是面向展示。默认主线使用 Qwen 做视觉理解、
+        部件定位和动作规划，同时保留你的 SVP 增强链路，用于对照和进一步演示。
+      </p>
+      <div class="actions">
+        <a class="primary" href="../README.md">查看 README</a>
+        <a href="../vision_agent.py">Qwen Planner</a>
+        <a href="../main_vlm.py">Full Demo Entry</a>
+        <a href="../backend/README.md">SVP Backend</a>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel span-7">
+        <h2>展示重点</h2>
+        <p>
+          默认方法已经切到 <code>VLM_METHOD=qwen</code>。对于演示场景，这样更直接：
+          用户输入自然语言指令后，Qwen 先理解任务，再选中部件，再把动作回写到抓取与机械臂执行模块。
+        </p>
+        <div class="tag-row">
+          <span class="tag">Qwen-first</span>
+          <span class="tag">Natural Language Control</span>
+          <span class="tag">Part Grounding</span>
+          <span class="tag">MuJoCo Grasp Demo</span>
+        </div>
+        <pre>python vision_agent.py --img docs/assets/scene-1.png --ins "抓住黄色小鸭并移动到杯子旁边" --save logs/qwen_demo</pre>
+      </article>
+
+      <article class="panel span-5">
+        <h2>两条链路</h2>
+        <div class="compare">
+          <div class="card">
+            <strong>Qwen</strong>
+            <p>默认路径。更适合演示、讲解和快速交互。</p>
+          </div>
+          <div class="card">
+            <strong>SVP</strong>
+            <p>保留你的增强方法，作为结构化视觉提示链路。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel span-12">
+        <h2>典型流程</h2>
+        <p>
+          `Qwen` 模式下，模型负责动作规划和目标部件定位；`main_vlm.py` 负责把像素目标交给抓取候选生成、
+          约束筛选和机械臂执行。`svp` 模式下，再额外接入 `backend/` 中的 SAM + DINO 服务。
+        </p>
+        <pre>Instruction -> Qwen Planner -> Part Grounding -> Pixel Target ->
+Grasp Candidate Filtering -> UR5e Execution</pre>
+      </article>
+
+      <article class="panel span-12">
+        <h2>Scene Samples</h2>
+        <div class="shot-grid">
+          <div class="shot">
+            <img src="./assets/scene-1.png" alt="Scene sample 1" />
+            <div>
+              <strong>Scene 1</strong>
+              <p>适合演示单目标抓取和目标部位定位。</p>
+            </div>
+          </div>
+          <div class="shot">
+            <img src="./assets/scene-2.png" alt="Scene sample 2" />
+            <div>
+              <strong>Scene 2</strong>
+              <p>适合演示“抓取后移动到参照物附近”的关系任务。</p>
+            </div>
+          </div>
+          <div class="shot">
+            <img src="./assets/scene-3.png" alt="Scene sample 3" />
+            <div>
+              <strong>Scene 3</strong>
+              <p>适合展示多物体桌面场景下的指令执行效果。</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
